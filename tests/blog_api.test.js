@@ -86,7 +86,7 @@ describe('Api tests: ', () => {
         })
     })
 
-    test.only('title and url are strictly necessary to create a new blog', async () => {
+    test('title and url are strictly necessary to create a new blog', async () => {
         const newBlog = {
             title : undefined,
             author: 'Arthur Shopenhauer',
@@ -96,6 +96,42 @@ describe('Api tests: ', () => {
         api.post('/api/blogs')
             .send(newBlog)
             .expect(400)
+    })
+
+    describe('deleting a blog', () => {
+        test('succeeds with status code 200 if the given id is valid', async () => {
+            const blogsInDB = await helpers.blogsInDB()
+            const id = blogsInDB[0].id
+            await api.delete(`/api/blogs/${id}`)
+                .expect(200)
+
+            const blogsInDBPostDeletion = await helpers.blogsInDB()
+            expect(blogsInDBPostDeletion).toHaveLength(blogs.length - 1)
+        })
+    })
+
+    describe('Updating a blog', () => {
+
+        test('Succeed with a valid id', async () => {
+            const blogsInDB = await helpers.blogsInDB()
+            const testBlog = blogsInDB[0]
+            const modifiedBlog = {
+                title: testBlog.title,
+                author: 'modified author',
+                url: testBlog.url,
+                likes: testBlog.likes +1
+            }
+
+            const updatedBlog = await api.put(`/api/blogs/${testBlog.id}`)
+                .send(modifiedBlog)
+                .expect(200)
+                .expect('Content-Type', /application\/json/)
+            
+            const blogsInDBAfterUpdating = await helpers.blogsInDB()
+            expect(blogsInDBAfterUpdating).toHaveLength(blogs.length)  
+            expect(updatedBlog.body.author).toBe(modifiedBlog.author)
+            expect(updatedBlog.body.likes).toBe(modifiedBlog.likes)
+        })
     })
 })
 
