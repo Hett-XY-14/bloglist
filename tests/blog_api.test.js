@@ -130,7 +130,7 @@ describe('Api tests: ', () => {
             const blogsInDBAfterUpdating = await helpers.blogsInDB()
             expect(blogsInDBAfterUpdating).toHaveLength(blogs.length)  
             expect(updatedBlog.body.author).toBe(modifiedBlog.author)
-            expect(updatedBlog.body.likes).toBe(modifiedBlog.likes)
+            expect(updatedBlog.body.likes).toBe(modifiedBlog.likes)u
         })
     })
 })
