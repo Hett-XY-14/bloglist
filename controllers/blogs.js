@@ -1,25 +1,33 @@
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 blogsRouter.get('/', async (request, response) => {
-  const blogs = await Blog.find({})
+  const blogs = await Blog.find({}).populate('user', {username:1, name:1})
   response.json(blogs)
 })
 
-blogsRouter.post('/', async (request, response, next) => {
-  const newBlog = request.body
-  try{
-    if (newBlog.title && newBlog.url) {
-      const newBlog = new Blog(request.body)
-      newBlog.save()
-      response.status(201).send(newBlog)
-    } else {
-      response.status(400).send({
-        error: 'Bad Request. Either title or url is missing'
-      })
-    }
-  } catch (exception) {
-    next(exception)
+blogsRouter.post('/', async (request, response) => {
+  const {title, author, url, likes} = request.body
+  const randomUser = await User.findOne()
+
+  if (title && url) {
+    const newBlog = new Blog({
+      title: title,
+      author: author,
+      url: url,
+      likes: likes,
+      user: randomUser._id
+    })
+    const savedNote = await newBlog.save()
+    randomUser.blogs = randomUser.blogs.concat(savedNote._id)
+    await randomUser.save()
+
+    response.status(201).send(newBlog)
+  } else {
+    response.status(400).send({
+      error: 'Bad Request. Either title or url is missing'
+    })
   }
 })
 
