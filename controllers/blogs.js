@@ -1,6 +1,9 @@
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
 const User = require('../models/user')
+const jwt = require('jsonwebtoken')
+const { SECRET } = require('../utils/config')
+const { findById } = require('../models/blog')
 
 blogsRouter.get('/', async (request, response) => {
   const blogs = await Blog.find({}).populate('user', {username:1, name:1})
@@ -8,20 +11,27 @@ blogsRouter.get('/', async (request, response) => {
 })
 
 blogsRouter.post('/', async (request, response) => {
-  const {title, author, url, likes} = request.body
-  const randomUser = await User.findOne()
+  const {title, author, url, likes, token} = request.body
+  console.log(token)
+  const decodedToken = jwt.verify(token, SECRET)
 
-  if (title && url) {
+  if (!(decodedToken.id)) {
+    return response.status(401).json({ error: 'token missing or invalid' })
+  }
+
+  const user = await User.findById(decodedToken.id)
+
+  if (title && url && user) {
     const newBlog = new Blog({
       title: title,
       author: author,
       url: url,
       likes: likes,
-      user: randomUser._id
+      user: user._id
     })
     const savedNote = await newBlog.save()
-    randomUser.blogs = randomUser.blogs.concat(savedNote._id)
-    await randomUser.save()
+    user.blogs = user.blogs.concat(savedNote._id)
+    await user.save()
 
     response.status(201).send(newBlog)
   } else {
@@ -31,18 +41,32 @@ blogsRouter.post('/', async (request, response) => {
   }
 })
 
-blogsRouter.delete(`/:id`, async (request, response, next) => {
-  const id = request.params.id
+blogsRouter.delete(`/:id`, async (request, response) => {
+  const blogId = request.params.id
+  const { token } = request.body
+  const decodedToken = jwt.verify(token, SECRET)
+  const userId = decodedToken.id
 
-  try {
-    const result = await Blog.findByIdAndDelete(id)
-    if (!result) {
-      return response.status(404).send({error: 'blog not found in db'}).end()
-    }
-    response.status(200).end()
-  } catch (exception) {
-    next(exception)
+  if (!userId) {
+    return response.status(401).json({ error: 'token missing or invalid' })
   }
+
+  const blog = await Blog.findById(blogId)
+
+  if (!blog) {
+    return response.status(404).send({ error: 'blog not found in db' }).end()
+  }
+  
+  if (!( blog.user.toString() === userId.toString() )) {
+    return response.status(401).json({ error: 'you don\'t have the rights to delete this blog' })
+  }
+
+  const removedBlog = await Blog.findByIdAndDelete(blogId)
+  const user = await User.findById(userId)
+  user.blogs = user.blogs.filter((blog) => blog.id.toString() !== blogId.toString())
+  await user.save()
+
+  response.status(200).end()
 
   // Blog.findByIdAndDelete(id)
   //   .then((result) => {
