@@ -1,0 +1,19 @@
+PUT http://localhost:3003/api/blogs/62cc544063431959616f8fbe
+Content-Type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFkcmVpIiwiaWQiOiI2MmNhNTFhYzdkZjgwZGYwOTljOGI3MTAiLCJpYXQiOjE2NTc1NDg5ODR9.9mDaxw8JS1Wx-QVSGfw59EkfupR4zUjariaYgQuwviU
+
+{
+  "title": "Blog for POST request test #9 UPDATED",
+  "author": "dev",
+  "url": "http://foo.com",
+  "likes": 5
+}
+
+# {
+#   "title": "Blog for POST request test #9",
+#   "author": "dev",
+#   "url": "http://foo.com",
+#   "likes": 3,
+#   "user": "62ca51ac7df80df099c8b710",
+#   "id": "62cc544063431959616f8fbe"
+# }

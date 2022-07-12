@@ -1,9 +1,9 @@
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
-Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFkcmVpIiwiaWQiOiI2MmNhNTFhYzdkZjgwZGYwOTljOGI3MTAiLCJpYXQiOjE2NTc0NDI3MDR9.YR0EV-Jv1DlxHPIHJw45Hv0Lm0poBSSeuq39gxuR4es
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFkcmVpIiwiaWQiOiI2MmNhNTFhYzdkZjgwZGYwOTljOGI3MTAiLCJpYXQiOjE2NTc1NDg5ODR9.9mDaxw8JS1Wx-QVSGfw59EkfupR4zUjariaYgQuwviU
 
 {
-    "title":"Blog for POST request test #2",
+    "title":"Blog for POST request test #9",
     "author": "dev",
     "url": "http://foo.com",
     "likes":3
