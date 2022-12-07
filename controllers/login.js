@@ -20,7 +20,12 @@ loginRouter.post('/', async (request, response) => {
         id: user._id
     }
 
-    token = jwt.sign(userForToken, SECRET)
+    // we sign the token to encode the user and the secret word, also it is set to expire in 3600 seconds
+    token = jwt.sign(
+        userForToken,
+        SECRET,
+        {expiresIn: 3600}
+    )
     
     response
         .status(200)
