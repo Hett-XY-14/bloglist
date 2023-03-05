@@ -6,7 +6,7 @@ You must be logged to create a new blog
 Tech Stack
 
     Frontend
-        Look for the repository named bloglist_frontend
+        Not implemented yet
         
     Backend
         NodeJS

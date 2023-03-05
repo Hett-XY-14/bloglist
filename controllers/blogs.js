@@ -78,10 +78,15 @@ blogsRouter.put('/:id', async (request, response) => {
   const blog = await Blog.findById(blogId)
 
   if (!(blog.user.toString() === user.id.toString())) {
-    return response.status(401).json({error: 'user doesn\'t posses the athorization to perform this action'})
+    if (( blog.title  !== title   || 
+          blog.author !== author  || 
+          blog.url    !== url     )) {
+            return response.status(401).json({error: 'user doesn\'t posses the athorization to perform this action'})
+    }
+  
   }
 
-  const userDocument = await User.findById(user.id)
+  const userDocument = await User.findById(blog.user)
 
   const modifiedBlog = {
     title: title,
